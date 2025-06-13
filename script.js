@@ -132,14 +132,16 @@ class ChainMatchGame {
             pauseMenuModal: document.getElementById('pauseMenuModal'),
             soundToggleBtn: document.getElementById('soundToggleBtn'),
             resumeGameBtn: document.getElementById('resumeGameBtn'),
-            quitToMenuBtn: document.getElementById('quitToMenuBtn')
+            quitToMenuBtn: document.getElementById('quitToMenuBtn'),
+            livesDisplay: document.getElementById('livesDisplay')
         };
         
         // Initialize audio elements
         this.sounds = {
             flip: new Audio('assets/flip.mp3'),
             match: new Audio('assets/match.mp3'),
-            win: new Audio('assets/win.mp3')
+            win: new Audio('assets/win.mp3'),
+            lifeLost: new Audio('assets/lifelost.mp3')
         };
         
         // Set audio properties
@@ -327,12 +329,12 @@ class ChainMatchGame {
         
         // Reset the level
         this.state.resetLevel();
-        
-        // Reset points to only include previous levels
-        this.state.totalNexPoints = previousLevelPoints;
-        
-        // Start the level again
-        this.startLevel();
+        this.generateCards();
+        this.renderCards();
+        this.updateUI();
+        this.startTimer();
+        this.state.isGameActive = true;
+        this.state.canFlip = true;
     }
 
     restartGame() {
@@ -682,6 +684,9 @@ class ChainMatchGame {
     }
 
     completeLevel() {
+        // Prevent multiple level completions
+        if (!this.state.isGameActive) return;
+        
         this.state.isGameActive = false;
         clearInterval(this.state.gameTimer);
         this.state.gameTimer = null;
@@ -723,12 +728,23 @@ class ChainMatchGame {
     }
 
     proceedToNextLevel() {
+        // Prevent multiple level transitions
+        if (this.state.gameScreen !== 'levelComplete') return;
+        
         this.hideModal();
         
         if (this.state.isLastLevel()) {
             this.showGameCompleteModal();
         } else {
+            const currentLevel = this.state.currentLevel;
             this.state.nextLevel();
+            
+            // Verify level progression
+            if (this.state.currentLevel !== currentLevel + 1) {
+                console.error('Level progression error detected');
+                this.state.currentLevel = currentLevel + 1;
+            }
+            
             this.startLevel();
         }
     }
@@ -771,7 +787,7 @@ class ChainMatchGame {
     }
 
     updateLivesDisplay() {
-        const livesDisplay = document.getElementById('livesDisplay');
+        const livesDisplay = this.elements.livesDisplay;
         const lifeIcons = livesDisplay.querySelectorAll('.life-icon');
         
         lifeIcons.forEach((icon, index) => {
@@ -781,6 +797,11 @@ class ChainMatchGame {
                 icon.classList.add('lost');
             }
         });
+
+        // Show notification if a life was just lost
+        if (this.state.livesRemaining < 3) {
+            this.showLifeLostNotification();
+        }
     }
 
     showGameOverModal() {
@@ -945,6 +966,21 @@ class ChainMatchGame {
         this.elements.pauseMenuModal.classList.remove('show');
         this.elements.pauseBtn.querySelector('.pause-icon').textContent = '⏸';
         this.showWelcomeScreen();
+    }
+
+    showLifeLostNotification() {
+        const notification = document.createElement('div');
+        notification.className = 'life-lost-notification';
+        notification.textContent = 'Life Lost!';
+        document.body.appendChild(notification);
+
+        // Play life lost sound
+        this.playSound('lifeLost');
+
+        // Remove notification after animation
+        setTimeout(() => {
+            notification.remove();
+        }, 1000);
     }
 }
 

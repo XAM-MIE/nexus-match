@@ -1131,3 +1131,50 @@ body {
 .game-card.mismatch::after {
     animation: none;
 }
+
+@keyframes lifeLostPulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.life-lost-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 0, 0, 0.2);
+    border: 2px solid rgba(255, 0, 0, 0.4);
+    color: #ff4444;
+    padding: 20px 40px;
+    border-radius: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 1000;
+    animation: lifeLostPulse 1s ease-in-out;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .life-lost-notification {
+        font-size: 20px;
+        padding: 15px 30px;
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .life-lost-notification {
+        font-size: 18px;
+        padding: 12px 24px;
+        min-width: 160px;
+    }
+}
