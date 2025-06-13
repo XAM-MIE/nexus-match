@@ -740,48 +740,92 @@ body {
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
     .game-container {
-        padding: 5px;
-        gap: 10px;
+        padding: 10px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
-    
+
     .welcome-content {
         padding: 15px;
+        gap: 15px;
     }
-    
+
     .game-title {
         font-size: 24px;
     }
-    
+
     .welcome-message {
-        font-size: 16px;
+        font-size: 20px;
+        margin: 10px 0;
     }
-    
+
     .game-header {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .main-logo {
+        width: 30px;
+        height: 30px;
+    }
+
+    .card-grid {
+        gap: 8px;
         padding: 8px;
     }
-    
-    .main-logo {
-        max-width: 60px;
-        height: 40px;
-    }
-    
-    .card-grid {
-        gap: 5px;
-    }
-    
+
     .game-card {
-        min-width: 35px;
-        min-height: 35px;
+        min-width: 50px;
+        min-height: 50px;
+        font-size: 20px;
+    }
+
+    .card-front {
+        font-size: 20px;
+    }
+
+    .game-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+
+    .game-rules {
+        font-size: 14px;
+        margin: 10px 0;
+    }
+
+    .game-rules h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .game-rules ul {
+        padding-left: 20px;
+    }
+
+    .game-rules li {
+        margin-bottom: 5px;
+    }
+
+    .stat-item {
+        padding: 5px 10px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+    }
+
+    .stat-value {
+        font-size: 14px;
+    }
+
+    .level-title {
         font-size: 16px;
     }
-    
-    .card-front {
-        font-size: 18px;
-    }
-    
-    .game-btn {
-        padding: 8px 16px;
-        font-size: 11px;
+
+    .level-description {
+        font-size: 12px;
     }
 }
 
@@ -789,49 +833,70 @@ body {
     .game-title {
         font-size: 20px;
     }
-    
+
     .welcome-message {
-        font-size: 14px;
+        font-size: 18px;
     }
-    
+
     .game-rules li {
         font-size: 12px;
     }
-    
+
     .card-grid {
-        gap: 4px;
+        gap: 6px;
+        padding: 6px;
     }
-    
+
     .game-card {
-        min-width: 30px;
-        min-height: 30px;
-        font-size: 14px;
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 16px;
     }
-    
+
     .card-front {
         font-size: 16px;
     }
-    
+
     .level-title {
-        font-size: 18px;
+        font-size: 14px;
     }
-    
+
     .level-description {
+        font-size: 11px;
+    }
+
+    .stat-value {
         font-size: 12px;
     }
-    
-    .stat-value {
-        font-size: 16px;
-    }
-    
+
     .game-btn {
-        padding: 6px 12px;
-        font-size: 10px;
+        padding: 8px 16px;
+        font-size: 11px;
     }
-    
+
     .hint-button {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    .game-header {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nexus-logo {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+    .game-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .stat-item {
         padding: 4px 8px;
-        font-size: 10px;
     }
 }
 
