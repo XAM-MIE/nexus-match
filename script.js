@@ -6,7 +6,7 @@ const GAME_CONFIG = {
         { level: 3, gridSize: [3, 4], title: "Standard Matrix", description: "Neural patterns detected", timeLimit: 60 },
         { level: 4, gridSize: [4, 5], title: "Advanced Network", description: "High-level encryption active", timeLimit: 75 },
         { level: 5, gridSize: [5, 6], title: "Master Protocol", description: "Maximum security challenge", timeLimit: 90 },
-        { level: 6, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 110 },   
+        { level: 6, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 105 },   
     ],
     BASE_POINTS: 10, // Base points for level 1
     getPointsForLevel: (level) => GAME_CONFIG.BASE_POINTS * Math.pow(2, level - 1)

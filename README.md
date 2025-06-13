@@ -9,18 +9,13 @@ A modern memory matching game with a cyberpunk theme, built with HTML, CSS, and 
 - Time-based gameplay with countdown timer
 - Lives system with visual feedback
 - Hint system to help find matches
-- Beautiful animations and visual effects
-- Responsive design that works on all devices
-- Sound effects and visual feedback
-- Special logo card with bonus points
-- Progressive difficulty scaling
 
 ## How to Play
 
 1. Match identical cards by flipping them in pairs
 2. Complete each level before time runs out
 3. Use hints wisely when stuck
-4. Match the special logo card for bonus points
+4. Match the Nexus logo card for bonus points
 5. Progress through increasingly difficult levels
 6. Try to achieve the highest score possible
 
@@ -31,7 +26,7 @@ A modern memory matching game with a cyberpunk theme, built with HTML, CSS, and 
 3. Standard Matrix (3x4) - 60 seconds
 4. Advanced Network (4x5) - 75 seconds
 5. Master Protocol (5x6) - 90 seconds
-6. Autonomous Agent (6x6) - 110 seconds
+6. Autonomous Agent (6x6) - 105 seconds
 
 
 ## Scoring System
