@@ -6,7 +6,7 @@ const GAME_CONFIG = {
         { level: 3, gridSize: [3, 4], title: "Standard Matrix", description: "Neural patterns detected", timeLimit: 60 },
         { level: 4, gridSize: [4, 5], title: "Advanced Network", description: "High-level encryption active", timeLimit: 75 },
         { level: 5, gridSize: [5, 6], title: "Master Protocol", description: "Maximum security challenge", timeLimit: 90 },
-        { level: 6, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 120 }
+        { level: 6, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 110 },   
     ],
     BASE_POINTS: 10, // Base points for level 1
     getPointsForLevel: (level) => GAME_CONFIG.BASE_POINTS * Math.pow(2, level - 1)
@@ -16,7 +16,8 @@ const GAME_CONFIG = {
 const CARD_SYMBOLS = [
     '🔷', '🔶', '🌟', '💎', '🎯',
     '🚀', '⭐', '💫', '🔥', '⚙️',
-    '🧊', '🔗',  '⚛️', '🛰️', '💾'
+    '🧊', '🔗',  '⚛️', '🛰️', '💾',
+    '🎮', '🎲', '🎨', '🎭', '🎪',
 ];
 
 // Special logo symbol  
@@ -247,12 +248,14 @@ class ChainMatchGame {
                 }
             }
         });
-        
+
         // Level complete modal
         this.elements.nextLevelBtn.addEventListener('click', () => this.proceedToNextLevel());
         
-        // Game complete modal
-        this.elements.playAgainBtn.addEventListener('click', () => this.restartGame());
+        // Modify play again button to refresh the site
+        this.elements.playAgainBtn.addEventListener('click', () => {
+            window.location.reload();
+        });
         
         // Game over modal
         this.elements.retryLevelBtn.addEventListener('click', () => {
@@ -358,7 +361,23 @@ class ChainMatchGame {
         this.state.hasLogoCard = Math.random() < 0.2;
         
         // Create pairs of symbols
-        let symbols = CARD_SYMBOLS.slice(0, pairsCount);
+        let symbols = [];
+        if (this.state.currentLevel >= 3) {
+            // For level 3 and above, allow symbols to be repeated once
+            const availableSymbols = [...CARD_SYMBOLS];
+            while (symbols.length < pairsCount) {
+                if (availableSymbols.length === 0) {
+                    // If we run out of symbols, start reusing them
+                    availableSymbols.push(...CARD_SYMBOLS);
+                }
+                const randomIndex = Math.floor(Math.random() * availableSymbols.length);
+                symbols.push(availableSymbols[randomIndex]);
+                availableSymbols.splice(randomIndex, 1);
+            }
+        } else {
+            // For levels 1-2, use unique symbols
+            symbols = CARD_SYMBOLS.slice(0, pairsCount);
+        }
         
         // If we're including the logo, replace one random symbol with it
         if (this.state.hasLogoCard && pairsCount > 1) {
@@ -525,107 +544,107 @@ class ChainMatchGame {
         const secondCard = this.state.cards[secondCardId];
         
         if (firstCard && secondCard) {
-            firstCard.isMatched = true;
-            secondCard.isMatched = true;
+        firstCard.isMatched = true;
+        secondCard.isMatched = true;
             this.state.matchedPairs++;
-            
+        
             this.playSound('match');
             
             // Mark cards as matched
-            const firstCardElement = document.querySelector(`[data-card-id="${firstCardId}"]`);
-            const secondCardElement = document.querySelector(`[data-card-id="${secondCardId}"]`);
+        const firstCardElement = document.querySelector(`[data-card-id="${firstCardId}"]`);
+        const secondCardElement = document.querySelector(`[data-card-id="${secondCardId}"]`);
+        
+        firstCardElement.classList.add('matched');
+        secondCardElement.classList.add('matched');
+        
+        // Calculate position for the points indicator 
+        const firstRect = firstCardElement.getBoundingClientRect();
+        const secondRect = secondCardElement.getBoundingClientRect();
+        const centerX = (firstRect.left + secondRect.left + firstRect.width + secondRect.width) / 4;
+        const centerY = (firstRect.top + secondRect.top + firstRect.height + secondRect.height) / 4;
+        
+        // Check if this is a logo match
+        if (firstCard.symbol === LOGO_SYMBOL) {
+            // For logo match, only award the logo bonus (100 points)
+            const logoBonus = 100;
+            this.state.totalNexPoints += logoBonus;
             
-            firstCardElement.classList.add('matched');
-            secondCardElement.classList.add('matched');
+            // Show special animation for logo match
+            firstCardElement.classList.add('logo-match');
+            secondCardElement.classList.add('logo-match');
             
-            // Calculate position for the points indicator 
-            const firstRect = firstCardElement.getBoundingClientRect();
-            const secondRect = secondCardElement.getBoundingClientRect();
-            const centerX = (firstRect.left + secondRect.left + firstRect.width + secondRect.width) / 4;
-            const centerY = (firstRect.top + secondRect.top + firstRect.height + secondRect.height) / 4;
+            // Create and show bonus points indicator for logo match
+            const bonusPoints = document.createElement('div');
+            bonusPoints.className = 'bonus-points logo-bonus';
+            bonusPoints.textContent = `+${logoBonus}`;
+            bonusPoints.style.position = 'fixed';
+            bonusPoints.style.left = `${centerX}px`;
+            bonusPoints.style.top = `${centerY}px`;
+            bonusPoints.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(bonusPoints);
             
-            // Check if this is a logo match
-            if (firstCard.symbol === LOGO_SYMBOL) {
-                // For logo match, only award the logo bonus (100 points)
-                const logoBonus = 100;
-                this.state.totalNexPoints += logoBonus;
-                
-                // Show special animation for logo match
-                firstCardElement.classList.add('logo-match');
-                secondCardElement.classList.add('logo-match');
-                
-                // Create and show bonus points indicator for logo match
-                const bonusPoints = document.createElement('div');
-                bonusPoints.className = 'bonus-points logo-bonus';
-                bonusPoints.textContent = `+${logoBonus}`;
-                bonusPoints.style.position = 'fixed';
-                bonusPoints.style.left = `${centerX}px`;
-                bonusPoints.style.top = `${centerY}px`;
-                bonusPoints.style.transform = 'translate(-50%, -50%)';
-                document.body.appendChild(bonusPoints);
-                
-                // Remove the bonus points indicator after animation completes
-                setTimeout(() => {
-                    if (bonusPoints.parentNode) {
-                        bonusPoints.parentNode.removeChild(bonusPoints);
-                    }
-                }, 2000);
-                
-                // Add 2 hints when logo is matched
-                this.state.hintsRemaining += 2;
-                
-                // Show hint bonus animation
-                const hintBonus = document.createElement('div');
-                hintBonus.className = 'hint-bonus';
-                hintBonus.textContent = '+2 HINTS';
-                document.body.appendChild(hintBonus);
-                
-                // Remove the hint bonus indicator after animation completes
-                setTimeout(() => {
-                    if (hintBonus.parentNode) {
-                        hintBonus.parentNode.removeChild(hintBonus);
-                    }
-                }, 2000);
-                
-                // Animate the hint count
-                if (this.elements.hintCount) {
-                    this.elements.hintCount.classList.add('hint-added');
-                    setTimeout(() => {
-                        this.elements.hintCount.classList.remove('hint-added');
-                    }, 1500);
+            // Remove the bonus points indicator after animation completes
+            setTimeout(() => {
+                if (bonusPoints.parentNode) {
+                    bonusPoints.parentNode.removeChild(bonusPoints);
                 }
-                
-                // Announce the bonus
-                announceToScreen('LOGO MATCH! +100 BONUS POINTS AND +2 HINTS!');
-            } else {
-                // For regular match, award standard points (10)
-                const matchPoints = 10;
-                this.state.totalNexPoints += matchPoints;
-                
-                // Create and show points indicator for regular match
-                const pointsIndicator = document.createElement('div');
-                pointsIndicator.className = 'bonus-points';
-                pointsIndicator.textContent = `+${matchPoints}`;
-                pointsIndicator.style.position = 'fixed';
-                pointsIndicator.style.left = `${centerX}px`;
-                pointsIndicator.style.top = `${centerY}px`;
-                pointsIndicator.style.transform = 'translate(-50%, -50%)';
-                document.body.appendChild(pointsIndicator);
-                
-                // Remove the points indicator after animation completes
+            }, 2000);
+            
+            // Add 2 hints when logo is matched
+            this.state.hintsRemaining += 2;
+            
+            // Show hint bonus animation
+            const hintBonus = document.createElement('div');
+            hintBonus.className = 'hint-bonus';
+            hintBonus.textContent = '+2 HINTS';
+            document.body.appendChild(hintBonus);
+            
+            // Remove the hint bonus indicator after animation completes
+            setTimeout(() => {
+                if (hintBonus.parentNode) {
+                    hintBonus.parentNode.removeChild(hintBonus);
+                }
+            }, 2000);
+            
+            // Animate the hint count
+            if (this.elements.hintCount) {
+                this.elements.hintCount.classList.add('hint-added');
                 setTimeout(() => {
-                    if (pointsIndicator.parentNode) {
-                        pointsIndicator.parentNode.removeChild(pointsIndicator);
-                    }
-                }, 2000);
+                    this.elements.hintCount.classList.remove('hint-added');
+                }, 1500);
             }
             
-            // Update UI to show new points and hint count
-            this.updateUI();
+            // Announce the bonus
+            announceToScreen('LOGO MATCH! +100 BONUS POINTS AND +2 HINTS!');
+        } else {
+            // For regular match, award standard points (10)
+            const matchPoints = 10;
+            this.state.totalNexPoints += matchPoints;
             
-            // Check if level is complete
-            if (this.state.matchedPairs === this.state.cards.length / 2) {
-                this.completeLevel();
+            // Create and show points indicator for regular match
+            const pointsIndicator = document.createElement('div');
+            pointsIndicator.className = 'bonus-points';
+            pointsIndicator.textContent = `+${matchPoints}`;
+            pointsIndicator.style.position = 'fixed';
+            pointsIndicator.style.left = `${centerX}px`;
+            pointsIndicator.style.top = `${centerY}px`;
+            pointsIndicator.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(pointsIndicator);
+            
+            // Remove the points indicator after animation completes
+            setTimeout(() => {
+                if (pointsIndicator.parentNode) {
+                    pointsIndicator.parentNode.removeChild(pointsIndicator);
+                }
+            }, 2000);
+        }
+        
+        // Update UI to show new points and hint count
+        this.updateUI();
+        
+        // Check if level is complete
+        if (this.state.matchedPairs === this.state.cards.length / 2) {
+            this.completeLevel();
             }
         }
     }
@@ -642,7 +661,7 @@ class ChainMatchGame {
             // Flip cards back
             this.unflipCard(firstCardId);
             this.unflipCard(secondCardId);
-        
+            
             // Remove animation classes
             firstCardElement.classList.remove('mismatch');
             secondCardElement.classList.remove('mismatch');
