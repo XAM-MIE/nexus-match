@@ -104,6 +104,7 @@ class ChainMatchGame {
             levelTitle: document.getElementById('levelTitle'),
             levelDescription: document.getElementById('levelDescription'),
             restartBtn: document.getElementById('restartBtn'),
+            pauseBtn: document.getElementById('pauseBtn'),
             
             // Modals
             levelCompleteModal: document.getElementById('levelCompleteModal'),
@@ -125,13 +126,30 @@ class ChainMatchGame {
             gameOverMessage: document.getElementById('gameOverMessage'),
             gameOverNexPoints: document.getElementById('gameOverNexPoints'),
             retryLevelBtn: document.getElementById('retryLevelBtn'),
-            backToMenuBtn: document.getElementById('backToMenuBtn')
+            backToMenuBtn: document.getElementById('backToMenuBtn'),
+
+            // Pause menu elements
+            pauseMenuModal: document.getElementById('pauseMenuModal'),
+            soundToggleBtn: document.getElementById('soundToggleBtn'),
+            resumeGameBtn: document.getElementById('resumeGameBtn'),
+            quitToMenuBtn: document.getElementById('quitToMenuBtn')
         };
+        
+        // Initialize audio elements
         this.sounds = {
-            flip: document.getElementById('flipSound'),
-            match: document.getElementById('matchSound'),
-            win: document.getElementById('winSound')
+            flip: new Audio('assets/flip.mp3'),
+            match: new Audio('assets/match.mp3'),
+            win: new Audio('assets/win.mp3')
         };
+        
+        // Set audio properties
+        Object.values(this.sounds).forEach(audio => {
+            audio.preload = 'auto';
+            audio.volume = 0.5;
+        });
+        
+        this.soundEnabled = true;
+        this.isPaused = false;
         this.init();
         this.setupHints();
     }
@@ -140,6 +158,7 @@ class ChainMatchGame {
         this.setupEventListeners();
         this.preloadAssets();
         this.showWelcomeScreen();
+        this.loadSoundPreference();
     }
 
     preloadAssets() {
@@ -148,14 +167,71 @@ class ChainMatchGame {
         logoImg.src = LOGO_SYMBOL;
         
         // Preload sounds
-        this.sounds.flip.load();
-        this.sounds.match.load();
-        this.sounds.win.load();
+        Object.values(this.sounds).forEach(audio => {
+            audio.load();
+        });
+    }
+
+    loadSoundPreference() {
+        const savedSoundState = localStorage.getItem('soundEnabled');
+        if (savedSoundState !== null) {
+            this.soundEnabled = savedSoundState === 'true';
+            this.updateSoundButton();
+        }
+    }
+
+    saveSoundPreference() {
+        localStorage.setItem('soundEnabled', this.soundEnabled);
+    }
+
+    updateSoundButton() {
+        const btn = this.elements.soundToggleBtn;
+        const icon = btn.querySelector('.btn-icon');
+        const text = btn.querySelector('.sound-text');
+        
+        if (this.soundEnabled) {
+            icon.textContent = '🔊';
+            text.textContent = 'Sound On';
+            btn.classList.remove('sound-off');
+        } else {
+            icon.textContent = '🔇';
+            text.textContent = 'Sound Off';
+            btn.classList.add('sound-off');
+        }
+    }
+
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        this.updateSoundButton();
+        this.saveSoundPreference();
+        
+        // Play a test sound if turning on
+        if (this.soundEnabled) {
+            this.playSound('flip');
+        }
+    }
+
+    async playSound(sound) {
+        if (!this.soundEnabled || !this.sounds[sound] || this.isPaused) return;
+        
+        try {
+            const audio = this.sounds[sound];
+            audio.currentTime = 0;
+            await audio.play();
+        } catch (error) {
+            console.log('Error playing sound:', error);
+        }
     }
 
     setupEventListeners() {
         // Welcome screen
         this.elements.startGameBtn.addEventListener('click', () => this.startGame());
+        
+        // Pause menu
+        this.elements.soundToggleBtn.addEventListener('click', () => this.toggleSound());
+        this.elements.resumeGameBtn.addEventListener('click', () => this.resumeGame());
+        this.elements.quitToMenuBtn.addEventListener('click', () => this.quitToMenu());
+        this.elements.pauseBtn.addEventListener('click', () => this.togglePause());
         
         this.elements.restartBtn.addEventListener('click', () => {
             if (this.state.livesRemaining > 0) {
@@ -194,13 +270,11 @@ class ChainMatchGame {
             }
         });
 
-        
+        // Add pause menu keyboard shortcut
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (this.state.gameScreen === 'playing') {
-                    this.showWelcomeScreen();
-                } else if (this.state.gameScreen === 'gameOver' && document.querySelector('.modal-overlay.show')) {
-                    this.hideModal();
+                    this.togglePause();
                 }
             }
         });
@@ -230,6 +304,8 @@ class ChainMatchGame {
         this.updateUI();
         this.startTimer();
         this.state.isGameActive = true;
+        this.isPaused = false;
+        this.elements.pauseBtn.querySelector('.pause-icon').textContent = '⏸';
         
         // Add resize listener to adjust card size when window changes
         window.addEventListener('resize', this.handleResize.bind(this));
@@ -383,12 +459,6 @@ class ChainMatchGame {
             if (this.state.flippedCards.length === 1) {
                 this.unflipCard(cardId);
                 this.state.flippedCards = [];
-                
-                // Play flip sound in reverse (lower pitch)
-                this.sounds.flip.playbackRate = 0.7;
-                this.sounds.flip.currentTime = 0;
-                this.sounds.flip.play().catch(e => console.log("Audio play failed:", e));
-                this.sounds.flip.playbackRate = 1.0; // Reset for next play
             }
             return;
         }
@@ -405,12 +475,11 @@ class ChainMatchGame {
 
     flipCard(cardId) {
         const card = this.state.cards[cardId];
+        if (!card || card.isFlipped || card.isMatched || !this.state.canFlip) return;
+
         card.isFlipped = true;
         this.state.flippedCards.push(cardId);
-        
-        // Play flip sound
-        this.sounds.flip.currentTime = 0;
-        this.sounds.flip.play().catch(e => console.log("Audio play failed:", e));
+        this.playSound('flip');
         
         // Update the card visual
         const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
@@ -453,112 +522,109 @@ class ChainMatchGame {
         const firstCard = this.state.cards[firstCardId];
         const secondCard = this.state.cards[secondCardId];
         
-        // Play match sound
-        this.sounds.match.currentTime = 0;
-        this.sounds.match.play().catch(e => console.log("Audio play failed:", e));
-        
-        // Mark cards as matched
-        firstCard.isMatched = true;
-        secondCard.isMatched = true;
-        
-        // Update visuals
-        const firstCardElement = document.querySelector(`[data-card-id="${firstCardId}"]`);
-        const secondCardElement = document.querySelector(`[data-card-id="${secondCardId}"]`);
-        
-        firstCardElement.classList.add('matched');
-        secondCardElement.classList.add('matched');
-        
-        // Calculate position for the points indicator 
-        const firstRect = firstCardElement.getBoundingClientRect();
-        const secondRect = secondCardElement.getBoundingClientRect();
-        const centerX = (firstRect.left + secondRect.left + firstRect.width + secondRect.width) / 4;
-        const centerY = (firstRect.top + secondRect.top + firstRect.height + secondRect.height) / 4;
-        
-        // Check if this is a logo match
-        if (firstCard.symbol === LOGO_SYMBOL) {
-            // For logo match, only award the logo bonus (100 points)
-            const logoBonus = 100;
-            this.state.totalNexPoints += logoBonus;
+        if (firstCard && secondCard) {
+            firstCard.isMatched = true;
+            secondCard.isMatched = true;
+            this.state.matchedPairs++;
             
-            // Show special animation for logo match
-            firstCardElement.classList.add('logo-match');
-            secondCardElement.classList.add('logo-match');
+            this.playSound('match');
             
-            // Create and show bonus points indicator for logo match
-            const bonusPoints = document.createElement('div');
-            bonusPoints.className = 'bonus-points logo-bonus';
-            bonusPoints.textContent = `+${logoBonus}`;
-            bonusPoints.style.position = 'fixed';
-            bonusPoints.style.left = `${centerX}px`;
-            bonusPoints.style.top = `${centerY}px`;
-            bonusPoints.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(bonusPoints);
+            // Mark cards as matched
+            const firstCardElement = document.querySelector(`[data-card-id="${firstCardId}"]`);
+            const secondCardElement = document.querySelector(`[data-card-id="${secondCardId}"]`);
             
-            // Remove the bonus points indicator after animation completes
-            setTimeout(() => {
-                if (bonusPoints.parentNode) {
-                    bonusPoints.parentNode.removeChild(bonusPoints);
-                }
-            }, 2000);
+            firstCardElement.classList.add('matched');
+            secondCardElement.classList.add('matched');
             
-            // Add 2 hints when logo is matched
-            this.state.hintsRemaining += 2;
+            // Calculate position for the points indicator 
+            const firstRect = firstCardElement.getBoundingClientRect();
+            const secondRect = secondCardElement.getBoundingClientRect();
+            const centerX = (firstRect.left + secondRect.left + firstRect.width + secondRect.width) / 4;
+            const centerY = (firstRect.top + secondRect.top + firstRect.height + secondRect.height) / 4;
             
-            // Show hint bonus animation
-            const hintBonus = document.createElement('div');
-            hintBonus.className = 'hint-bonus';
-            hintBonus.textContent = '+2 HINTS';
-            document.body.appendChild(hintBonus);
-            
-            // Remove the hint bonus indicator after animation completes
-            setTimeout(() => {
-                if (hintBonus.parentNode) {
-                    hintBonus.parentNode.removeChild(hintBonus);
-                }
-            }, 2000);
-            
-            // Animate the hint count
-            if (this.elements.hintCount) {
-                this.elements.hintCount.classList.add('hint-added');
+            // Check if this is a logo match
+            if (firstCard.symbol === LOGO_SYMBOL) {
+                // For logo match, only award the logo bonus (100 points)
+                const logoBonus = 100;
+                this.state.totalNexPoints += logoBonus;
+                
+                // Show special animation for logo match
+                firstCardElement.classList.add('logo-match');
+                secondCardElement.classList.add('logo-match');
+                
+                // Create and show bonus points indicator for logo match
+                const bonusPoints = document.createElement('div');
+                bonusPoints.className = 'bonus-points logo-bonus';
+                bonusPoints.textContent = `+${logoBonus}`;
+                bonusPoints.style.position = 'fixed';
+                bonusPoints.style.left = `${centerX}px`;
+                bonusPoints.style.top = `${centerY}px`;
+                bonusPoints.style.transform = 'translate(-50%, -50%)';
+                document.body.appendChild(bonusPoints);
+                
+                // Remove the bonus points indicator after animation completes
                 setTimeout(() => {
-                    this.elements.hintCount.classList.remove('hint-added');
-                }, 1500);
+                    if (bonusPoints.parentNode) {
+                        bonusPoints.parentNode.removeChild(bonusPoints);
+                    }
+                }, 2000);
+                
+                // Add 2 hints when logo is matched
+                this.state.hintsRemaining += 2;
+                
+                // Show hint bonus animation
+                const hintBonus = document.createElement('div');
+                hintBonus.className = 'hint-bonus';
+                hintBonus.textContent = '+2 HINTS';
+                document.body.appendChild(hintBonus);
+                
+                // Remove the hint bonus indicator after animation completes
+                setTimeout(() => {
+                    if (hintBonus.parentNode) {
+                        hintBonus.parentNode.removeChild(hintBonus);
+                    }
+                }, 2000);
+                
+                // Animate the hint count
+                if (this.elements.hintCount) {
+                    this.elements.hintCount.classList.add('hint-added');
+                    setTimeout(() => {
+                        this.elements.hintCount.classList.remove('hint-added');
+                    }, 1500);
+                }
+                
+                // Announce the bonus
+                announceToScreen('LOGO MATCH! +100 BONUS POINTS AND +2 HINTS!');
+            } else {
+                // For regular match, award standard points (10)
+                const matchPoints = 10;
+                this.state.totalNexPoints += matchPoints;
+                
+                // Create and show points indicator for regular match
+                const pointsIndicator = document.createElement('div');
+                pointsIndicator.className = 'bonus-points';
+                pointsIndicator.textContent = `+${matchPoints}`;
+                pointsIndicator.style.position = 'fixed';
+                pointsIndicator.style.left = `${centerX}px`;
+                pointsIndicator.style.top = `${centerY}px`;
+                pointsIndicator.style.transform = 'translate(-50%, -50%)';
+                document.body.appendChild(pointsIndicator);
+                
+                // Remove the points indicator after animation completes
+                setTimeout(() => {
+                    if (pointsIndicator.parentNode) {
+                        pointsIndicator.parentNode.removeChild(pointsIndicator);
+                    }
+                }, 2000);
             }
             
-            // Announce the bonus
-            announceToScreen('LOGO MATCH! +100 BONUS POINTS AND +2 HINTS!');
-        } else {
-            // For regular match, award standard points (10)
-            const matchPoints = 10;
-            this.state.totalNexPoints += matchPoints;
+            // Update UI to show new points and hint count
+            this.updateUI();
             
-            // Create and show points indicator for regular match
-            const pointsIndicator = document.createElement('div');
-            pointsIndicator.className = 'bonus-points';
-            pointsIndicator.textContent = `+${matchPoints}`;
-            pointsIndicator.style.position = 'fixed';
-            pointsIndicator.style.left = `${centerX}px`;
-            pointsIndicator.style.top = `${centerY}px`;
-            pointsIndicator.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(pointsIndicator);
-            
-            // Remove the points indicator after animation completes
-            setTimeout(() => {
-                if (pointsIndicator.parentNode) {
-                    pointsIndicator.parentNode.removeChild(pointsIndicator);
-                }
-            }, 2000);
-        }
-        
-        // Update UI to show new points and hint count
-        this.updateUI();
-        
-        // Update match count
-        this.state.matchedPairs++;
-        
-        // Check if level is complete
-        if (this.state.matchedPairs === this.state.cards.length / 2) {
-            this.completeLevel();
+            // Check if level is complete
+            if (this.state.matchedPairs === this.state.cards.length / 2) {
+                this.completeLevel();
+            }
         }
     }
 
@@ -574,10 +640,10 @@ class ChainMatchGame {
             // Flip cards back
             this.unflipCard(firstCardId);
             this.unflipCard(secondCardId);
-            
+        
             // Remove animation classes
-            firstCardElement.classList.remove('mismatch', 'flipped');
-            secondCardElement.classList.remove('mismatch', 'flipped');
+            firstCardElement.classList.remove('mismatch');
+            secondCardElement.classList.remove('mismatch');
         }, 500);
     }
 
@@ -618,12 +684,12 @@ class ChainMatchGame {
     completeLevel() {
         this.state.isGameActive = false;
         clearInterval(this.state.gameTimer);
+        this.state.gameTimer = null;
+        
+        this.playSound('win');
         
         // Remove resize listener when level completes
         window.removeEventListener('resize', this.handleResize.bind(this));
-        
-        this.sounds.win.currentTime = 0;
-        this.sounds.win.play().catch(e => console.log("Audio play failed:", e));
         
         const levelBonus = this.state.getLevelPoints();
         this.state.totalNexPoints += levelBonus;
@@ -844,6 +910,41 @@ class ChainMatchGame {
             const [rows, cols] = levelConfig.gridSize;
             this.adjustCardSize(rows, cols);
         }
+    }
+
+    togglePause() {
+        if (this.isPaused) {
+            this.resumeGame();
+        } else {
+            this.pauseGame();
+        }
+    }
+
+    pauseGame() {
+        if (!this.state.isGameActive || this.isPaused) return;
+        
+        this.isPaused = true;
+        this.state.canFlip = false;
+        clearInterval(this.state.gameTimer);
+        this.elements.pauseMenuModal.classList.add('show');
+        this.elements.pauseBtn.querySelector('.pause-icon').textContent = '▶';
+    }
+
+    resumeGame() {
+        if (!this.isPaused) return;
+        
+        this.isPaused = false;
+        this.state.canFlip = true;
+        this.startTimer();
+        this.elements.pauseMenuModal.classList.remove('show');
+        this.elements.pauseBtn.querySelector('.pause-icon').textContent = '⏸';
+    }
+
+    quitToMenu() {
+        this.isPaused = false;
+        this.elements.pauseMenuModal.classList.remove('show');
+        this.elements.pauseBtn.querySelector('.pause-icon').textContent = '⏸';
+        this.showWelcomeScreen();
     }
 }
 

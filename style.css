@@ -1010,3 +1010,124 @@ body {
 .hint-highlight {
     animation: hintPulse 1s ease-in-out 3;
 }
+
+.pause-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.pause-options .game-btn {
+    width: 200px;
+    justify-content: center;
+}
+
+.pause-options .game-btn.sound-off {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.pause-options .game-btn.sound-off:hover {
+    background: rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+    .pause-options .game-btn {
+        width: 180px;
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pause-options .game-btn {
+        width: 160px;
+        padding: 8px 16px;
+        font-size: 11px;
+    }
+}
+
+.pause-btn {
+    background: rgba(40, 40, 40, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pause-btn:hover {
+    background: rgba(60, 60, 60, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pause-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: 0.5s;
+}
+
+.pause-btn:hover::after {
+    left: 100%;
+}
+
+.pause-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+@media (max-width: 768px) {
+    .pause-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .pause-icon {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pause-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .pause-icon {
+        font-size: 16px;
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.game-card.mismatch {
+    animation: shake 0.5s ease-in-out;
+    background: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.game-card.mismatch::after {
+    animation: none;
+}

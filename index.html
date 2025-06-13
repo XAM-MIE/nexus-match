@@ -63,6 +63,9 @@
                         </div>
                     </div>
                 </div>
+                <button class="pause-btn" id="pauseBtn">
+                    <span class="pause-icon">⏸</span>
+                </button>
             </header>
 
             <main class="game-board">
@@ -166,6 +169,30 @@
                     <span class="btn-icon">←</span>
                     Main Menu
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pauseMenuModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Game Paused</h2>
+            </div>
+            <div class="modal-body">
+                <div class="pause-options">
+                    <button class="game-btn" id="soundToggleBtn">
+                        <span class="btn-icon">🔊</span>
+                        <span class="sound-text">Sound On</span>
+                    </button>
+                    <button class="game-btn" id="resumeGameBtn">
+                        <span class="btn-icon">▶</span>
+                        Resume Game
+                    </button>
+                    <button class="game-btn" id="quitToMenuBtn">
+                        <span class="btn-icon">←</span>
+                        Quit to Menu
+                    </button>
+                </div>
             </div>
         </div>
     </div>
