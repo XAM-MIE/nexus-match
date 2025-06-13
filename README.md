@@ -32,7 +32,7 @@ A modern memory matching game with a cyberpunk theme, built with HTML, CSS, and 
 ## Scoring System
 
 - Base points increase with each level
-- Logo card matches award bonus points
+- Nexus Logo card matches award bonus points
 - Time remaining affects final score
 - Lives remaining contribute to score multiplier
 
@@ -43,6 +43,7 @@ A modern memory matching game with a cyberpunk theme, built with HTML, CSS, and 
 - Vanilla JavaScript (ES6+)
 - Responsive design principles
 - CSS Grid and Flexbox for layouts
+- GitHub Pages for live hosting
 
 ## Getting Started
 
@@ -57,6 +58,11 @@ A modern memory matching game with a cyberpunk theme, built with HTML, CSS, and 
 - Safari
 - Edge
 - Opera
+
+## ✅ To-Do
+ - Add PVP mode
+ - Blockchain integration for Nex Points
+ - Leaderboard support
 
 ## License
 
