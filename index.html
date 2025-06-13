@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain Match – Nexus Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Chakra+Petch:wght@300;400;500;600;700&family=Quantico:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-content">
+                <div class="nexus-logo large">
+                    <img src="assets/nexus.png" alt="Nexus Logo" class="main-logo">
+                </div>
+                
+                <h1 class="welcome-message">Welcome to Nexus Match!</h1>
+                
+                <div class="game-rules">
+                    <h3>Mission Briefing</h3>
+                    <ul>
+                        <li>Match identical cards to clear each level</li>
+                        <li>Progress through 6 levels</li>
+                        <li>Nex Points increase with each level's difficulty</li>
+                        <li>Complete all levels to maximize your score</li>
+                    </ul>
+                </div>
+                
+                <button class="game-btn primary large" id="startGameBtn">
+                    Start Mission
+                </button>
+            </div>
+        </div>
+
+        <div class="game-screen" id="gameScreen">
+            <header class="game-header">
+                <div class="nexus-logo">
+                    <img src="assets/nexus.png" alt="Nexus Logo" class="main-logo">
+                    <span class="logo-text">NEXUS MATCH</span>
+                </div>
+                <div class="level-info">
+                    <span class="level-label">Level</span>
+                    <span class="level-value" id="currentLevel">1</span>
+                </div>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Nex Points</span>
+                        <span class="stat-value" id="nexPoints">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Time</span>
+                        <span class="stat-value" id="timer">60</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Lives</span>
+                        <div class="lives-display" id="livesDisplay">
+                            <span class="life-icon">❤</span>
+                            <span class="life-icon">❤</span>
+                            <span class="life-icon">❤</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="game-board">
+                <div class="level-header">
+                    <h2 class="level-title" id="levelTitle">Level 1 - Training Grid</h2>
+                    <p class="level-description" id="levelDescription">Match all pairs to advance</p>
+                </div>
+                <div class="card-grid" id="cardGrid">
+                </div>
+            </main>
+
+            <!-- Game Controls -->
+            <footer class="game-controls">
+                <button class="game-btn" id="restartBtn">
+                    <span class="btn-icon">↻</span>
+                    Restart Level
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="levelCompleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="levelCompleteTitle">Level Complete!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="level-score">
+                    <div class="score-item">
+                        <span class="score-label">Level Bonus</span>
+                        <span class="score-value" id="levelBonus">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label">Total Nex Points</span>
+                        <span class="score-value total" id="totalNexPoints">0</span>
+                    </div>
+                </div>
+                <div class="modal-message" id="levelCompleteMessage">
+                    Excellent work, Guardian! Preparing next challenge...
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="game-btn primary" id="nextLevelBtn">
+                    <span class="btn-icon">→</span>
+                    Next Level
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="gameCompleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="gameCompleteTitle">Mission Complete!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="final-score">
+                    <div class="score-item">
+                        <span class="score-label">Final Nex Points</span>
+                        <span class="score-value final" id="finalNexPoints">0</span>
+                    </div>
+                    <div class="achievement-badge">
+                        <span class="badge-text" id="achievementText">Chain Guardian</span>
+                    </div>
+                </div>
+                <div class="modal-message" id="gameCompleteMessage">
+                    Outstanding performance, Guardian! You've successfully completed all training levels. The Nexus network is stronger because of your efforts.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="game-btn primary" id="playAgainBtn" href="index.html">
+                    <span class="btn-icon">▶</span>
+                    Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="gameOverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="gameOverTitle">Time Expired!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="final-score">
+                    <div class="score-item">
+                        <span class="score-label">Nex Points Earned</span>
+                        <span class="score-value" id="gameOverNexPoints">0</span>
+                    </div>
+                </div>
+                <div class="modal-message" id="gameOverMessage">
+                    Time ran out, but your efforts contributed valuable data to Nexus. Every attempt brings us closer to the breakthrough.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="game-btn primary" id="retryLevelBtn">
+                    <span class="btn-icon">↻</span>
+                    Retry Level
+                </button>
+                <button class="game-btn" id="backToMenuBtn">
+                    <span class="btn-icon">←</span>
+                    Main Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-effects">
+        <div class="grid-overlay"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+    </div>
+
+    <audio id="flipSound" src="assets/flip.mp3"></audio>
+    <audio id="matchSound" src="assets/match.mp3"></audio>
+    <audio id="winSound" src="assets/win.mp3"></audio>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
