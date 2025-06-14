@@ -379,7 +379,6 @@ class ChainMatchGame {
             symbols = CARD_SYMBOLS.slice(0, pairsCount);
         }
         
-        // If we're including the logo, replace one random symbol with it
         if (this.state.hasLogoCard && pairsCount > 1) {
             const randomIndex = Math.floor(Math.random() * (pairsCount - 1)) + 1;
             symbols[randomIndex] = LOGO_SYMBOL;
