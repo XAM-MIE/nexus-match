@@ -2,12 +2,12 @@
 const GAME_CONFIG = {
     LEVELS: [
         { level: 1, gridSize: [2, 2], title: "Training Grid", description: "Match all pairs to advance", timeLimit: 10 },
-        { level: 2, gridSize: [2, 3], title: "Basic Protocol", description: "Complexity increasing...", timeLimit: 15 },
-        { level: 3, gridSize: [3, 4], title: "Standard Matrix", description: "Neural patterns detected", timeLimit: 20 },
-        { level: 4, gridSize: [4, 4], title: "SM", description: "Neural", timeLimit: 25 },
-        { level: 5, gridSize: [4, 5], title: "Advanced Network", description: "High-level encryption active", timeLimit: 35 },
-        { level: 6, gridSize: [5, 6], title: "Master Protocol", description: "Maximum security challenge", timeLimit: 65 },
-        { level: 7, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 90 },   
+        { level: 2, gridSize: [2, 3], title: "Basic Protocol", description: "Complexity increasing...", timeLimit: 20 },
+        { level: 3, gridSize: [3, 4], title: "Standard Matrix", description: "Neural patterns detected", timeLimit: 35 },
+        { level: 4, gridSize: [4, 4], title: "SM", description: "Neural", timeLimit: 45 },
+        { level: 5, gridSize: [4, 5], title: "Advanced Network", description: "High-level encryption active", timeLimit: 55 },
+        { level: 6, gridSize: [5, 6], title: "Master Protocol", description: "Maximum security challenge", timeLimit: 70 },
+        { level: 7, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 95 },   
     ],
     BASE_POINTS: 10, // Base points for level 1
     getPointsForLevel: (level) => GAME_CONFIG.BASE_POINTS * Math.pow(2, level - 1)
