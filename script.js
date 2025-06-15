@@ -2,12 +2,12 @@
 const GAME_CONFIG = {
     LEVELS: [
         { level: 1, gridSize: [2, 2], title: "Training Grid", description: "Match all pairs to advance", timeLimit: 10 },
-        { level: 2, gridSize: [2, 3], title: "Basic Protocol", description: "Complexity increasing...", timeLimit: 20 },
-        { level: 3, gridSize: [3, 4], title: "Standard Matrix", description: "Neural patterns detected", timeLimit: 35 },
-        { level: 4, gridSize: [4, 4], title: "SM", description: "Neural", timeLimit: 45 },
+        { level: 2, gridSize: [2, 3], title: "Node Awakening", description: "Spin up core nodes and join the Nexus grid.", timeLimit: 20 },
+        { level: 3, gridSize: [3, 4], title: "Chain Sync", description: "Link blocks and stabilize the network.", timeLimit: 35 },
+        { level: 4, gridSize: [4, 4], title: "Consensus Protocol", description: "Reach agreement across all active nodes.", timeLimit: 45 },
         { level: 5, gridSize: [4, 5], title: "Advanced Network", description: "High-level encryption active", timeLimit: 55 },
-        { level: 6, gridSize: [5, 6], title: "Master Protocol", description: "Maximum security challenge", timeLimit: 70 },
-        { level: 7, gridSize: [6, 6], title: "Automonous Agent", description: "Ultimate challenge", timeLimit: 95 },   
+        { level: 6, gridSize: [5, 6], title: "Autonomous Agents", description: "Coordinate self-governing Nexus systems", timeLimit: 70 },
+        { level: 7, gridSize: [6, 6], title: "Quantum Override", description: "Face the ultimate challenge", timeLimit: 95 },   
     ],
     BASE_POINTS: 10, // Base points for level 1
     getPointsForLevel: (level) => GAME_CONFIG.BASE_POINTS * Math.pow(2, level - 1)
