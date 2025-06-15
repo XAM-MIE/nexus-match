@@ -1,8 +1,8 @@
 // Game config 
 const GAME_CONFIG = {
     LEVELS: [
-        { level: 1, gridSize: [2, 2], title: "Training Grid", description: "Match all pairs to advance", timeLimit: 10 },
-        { level: 2, gridSize: [2, 3], title: "Node Awakening", description: "Spin up core nodes and join the Nexus grid.", timeLimit: 20 },
+        { level: 1, gridSize: [2, 2], title: "Training Grid", description: "Match all pairs to advance", timeLimit: 15 },
+        { level: 2, gridSize: [2, 3], title: "Node Awakening", description: "Spin up core nodes and join the Nexus grid.", timeLimit: 25 },
         { level: 3, gridSize: [3, 4], title: "Chain Sync", description: "Link blocks and stabilize the network.", timeLimit: 35 },
         { level: 4, gridSize: [4, 4], title: "Consensus Protocol", description: "Reach agreement across all active nodes.", timeLimit: 45 },
         { level: 5, gridSize: [4, 5], title: "Advanced Network", description: "High-level encryption active", timeLimit: 55 },
