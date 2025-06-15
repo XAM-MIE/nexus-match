@@ -4,7 +4,7 @@ A modern memory matching game with a cyberpunk theme, built with HTML, CSS, and 
 
 ## Features
 
-- 6 challenging levels with increasing difficulty
+- 7 challenging levels with increasing difficulty
 - Dynamic grid sizes from 2x2 to 6x6
 - Time-based gameplay with countdown timer
 - Lives system with visual feedback
