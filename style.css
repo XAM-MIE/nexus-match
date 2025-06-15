@@ -550,6 +550,8 @@ body {
     max-height: calc(100vh - 200px);
     margin: 0 auto;
     justify-content: center;
+    align-items: center;
+    padding: 10px;
 }
 
 .card-back {
@@ -932,16 +934,21 @@ body {
 }
 
 .level-4 .card-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
 }
 
 .level-5 .card-grid {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.level-6 .card-grid {
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(5, 1fr);
 }
 
-.level-6 .card-grid {
+.level-7 .card-grid {
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(6, 1fr);
 }
